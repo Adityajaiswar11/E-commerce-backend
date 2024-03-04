@@ -1,7 +1,6 @@
 const express= require("express");
 const mongoose= require("mongoose");
 const cors = require("cors");
-const morgan = require("morgan");
 require('dotenv').config();
 const fs = require('fs');
 const app = express();
@@ -26,17 +25,6 @@ mongoose
 const routesPath = "./routes";
 const routeFiles = fs.readdirSync(routesPath);
 routeFiles.map((r) => app.use("/api", require(`./routes/${r}`)));
-
-
-
-
-
-
-app.get('/',(req,res)=>{
-        res.send("Aditya")
-})
-
-
 
 
   
