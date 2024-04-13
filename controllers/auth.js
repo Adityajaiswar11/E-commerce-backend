@@ -55,14 +55,15 @@ const login = (req, res) => {
 };
 
 const userId = async (req, res) => {
-  const user = req.params.userId;
-  const userName = await User.findOne({ _id: user });
-  try {
-    return res.json(userName);
-  } catch (e) {
-    console.log(e);
-    return res.status(404).send("user not found");
-  }
+  // const user = req.params.userId;
+  // const userName = await User.findOne({ _id: user });
+  // try {
+  //   return res.json(userName);
+  // } catch (e) {
+  //   console.log(e);
+  //   return res.status(404).send("user not found");
+  // }
+  res.send("Server is running")
 };
 module.exports = {
   signup,
