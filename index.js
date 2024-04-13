@@ -28,7 +28,7 @@ mongoose
 //automated routes
 const routesPath = "./routes";
 const routeFiles = fs.readdirSync(routesPath);
-routeFiles.map((r) => app.use("/api", require(`./routes/${r}`)));
+routeFiles.map((r) => app.use("/", require(`./routes/${r}`)));
 
 app.get("/",(req,res)=>{
   res.send("server is running rn")
