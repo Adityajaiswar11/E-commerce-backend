@@ -42,7 +42,7 @@ const login = (req, res) => {
 
       const validPass = comparePassword(password, user.password);
       if (!validPass) return res.status(400).send("Invalid Email or Password");
-
+      user.password = undefined;
       if (validPass) return res.status(200).send(user);
       // //create and assign a token
       // const token = jwt.sign({ _id: user._id }, process.env.SECRET);
