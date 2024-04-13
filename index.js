@@ -5,11 +5,15 @@ require('dotenv').config();
 const fs = require('fs');
 const app = express();
 mongoose.set("strictQuery", false);
+const bodyParser = require("body-parser")
 
 
 //middleware
 app.use(cors());
 app.use(express.json());
+app.use(bodyParser.urlencoded({ extended: false }))
+
+app.use(bodyParser.json())
 
 //connection for mongoose database
 mongoose
