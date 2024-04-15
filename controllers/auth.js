@@ -5,7 +5,7 @@ const User = require("../models/user");
 const signup = async (req, res) => {
   const { name, email, password } = req.body;
   //validation for name email and password
-  console.log(name, email, password);
+
   if (!name) {
     return res.status(400).send("Please enter your name");
   }
@@ -36,12 +36,15 @@ const signup = async (req, res) => {
 
 const login = (req, res) => {
   const { email, password } = req.body;
+  console.log(email,password)
   User.findOne({ email })
-    .then((user) => {
+    .then(async(user) => {
+      // console.log(user.password)
       if (!user) return res.status(400).send("Invalid Email or Password");
-
-      const validPass = comparePassword(password, user.password);
-      if (!validPass) return res.status(400).send("Invalid Email or Password");
+      
+      const validPass =await comparePassword(password, user.password);
+      // console.log("check true or false",validPass)
+      if (!validPass) return res.status(400).send("Invalid Password");
       user.password = undefined;
       if (validPass) return res.status(200).send(user);
       // //create and assign a token
