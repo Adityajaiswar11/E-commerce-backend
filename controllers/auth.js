@@ -2,38 +2,37 @@ const { hashPassword } = require("../helper/auth");
 const { comparePassword } = require("../helper/auth");
 const User = require("../models/user");
 
+// signup api
 const signup = async (req, res) => {
   const { name, email, password } = req.body;
-  //validation for name email and password
 
-  if (!name) {
-    return res.status(400).send("Please enter your name");
+  // Validate name, email, and password
+  if (!name || !email || !password) {
+    return res.status(400).json({ message: "All fields are required!" });
   }
-
-  if (!email) {
-    return res.status(400).send("Please enter your email");
-  }
-
-  if (!password) {
-    return res.status(400).send("Please enter your password");
-  }
-  //check if email already exists
-  const isEmailexit = await User.findOne({ email });
-  if (isEmailexit) {
-    return res.status(400).send("Email is already registered!");
-  }
-  const hashNewPassword = await hashPassword(password);
-  const user = new User({ name, email, password: hashNewPassword });
 
   try {
+    // Check if the email already exists
+    const isEmailExist = await User.findOne({ email });
+    if (isEmailExist) {
+      return res.status(400).json({ message: "Email is already registered!" });
+    }
+
+    // Hash the password
+    const hashedPassword = await hashPassword(password);
+
+    // Create and save the new user
+    const user = new User({ name, email, password: hashedPassword });
     await user.save();
-    return res.json({ user });
+    return res.status(201).json({ message: "User registered successfully!" });
   } catch (err) {
-    console.log(err);
-    res.status(400).send("something went wrong ! try again");
+    console.error("Signup Error:", err);
+    return res.status(500).json({ message: "Internal server error. Please try again!" });
   }
 };
 
+
+//login api
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;

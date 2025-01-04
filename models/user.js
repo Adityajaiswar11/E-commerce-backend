@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+let Schema = mongoose.Schema;
 
-// Define the User schema     object
-var userSchema = new Schema({
+// Define the User schema object
+let userSchema = new Schema({
     name:{
           type: String,
           trim:true,
@@ -18,15 +18,7 @@ var userSchema = new Schema({
           type: String,
           required:true
     },
-    photo:String,
-    following: [{
-          type: Schema.Types.ObjectId,
-          ref: 'User'
-        }],
-        followers: [{
-          type: Schema.Types.ObjectId,
-          ref: 'User'
-        }],
+    profile:String,
 });
 
 const User = mongoose.model("User", userSchema);
