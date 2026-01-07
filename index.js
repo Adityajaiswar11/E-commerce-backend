@@ -17,11 +17,26 @@ app.use(bodyParser.json())
 
 //connection for mongoose database
 mongoose
-  .connect(process.env.DATABASE_NAME,{
+  .connect(process.env.DATABASE_URI, {
           
   })
   .then(() => console.log("Database connected"))
   .catch((err) => console.log("Error connecting to database",err));
+
+
+app.get('/api/test', async (req, res) => {
+  try {
+    res.status(200).json({
+      success: true,
+      message: 'working'
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Server error'
+    });
+  }
+});
 
 
 
