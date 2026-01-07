@@ -5,7 +5,8 @@ require('dotenv').config();
 const fs = require('fs');
 const app = express();
 mongoose.set("strictQuery", false);
-const bodyParser = require("body-parser")
+const bodyParser = require("body-parser");
+const Product = require("./models/productModel");
 
 
 //middleware
@@ -24,19 +25,25 @@ mongoose
   .catch((err) => console.log("Error connecting to database",err));
 
 
+
 app.get('/api/test', async (req, res) => {
   try {
-    res.status(200).json({
+    res.status(201).json({
       success: true,
-      message: 'working'
+      message:'server is running'
+      
     });
+
   } catch (error) {
+    console.error(error);
+
     res.status(500).json({
       success: false,
-      message: 'Server error'
+      message: error.message
     });
   }
 });
+
 
 
 
