@@ -1,6 +1,7 @@
 const { hashPassword } = require("../helper/auth");
 const { comparePassword } = require("../helper/auth");
 const User = require("../models/user");
+const jwt = require("jsonwebtoken");
 
 // signup api
 const signup = async (req, res) => {
@@ -52,8 +53,18 @@ const login = async (req, res) => {
     // Remove password from the user object before sending
     const { password: _, ...userWithoutPassword } = user.toObject();
 
-    // Return the user details
-    return res.status(200).json(userWithoutPassword);
+    // Generate a JWT token
+    const token = jwt.sign(
+      { _id: user._id },
+      process.env.SECRET || "default_jwt_secret",
+      { expiresIn: "7d" }
+    );
+
+    // Return the user details and token
+    return res.status(200).json({
+      token,
+      user: userWithoutPassword
+    });
 
   } catch (error) {
     console.error("Login Error:", error);

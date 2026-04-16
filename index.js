@@ -8,13 +8,15 @@ mongoose.set("strictQuery", false);
 const bodyParser = require("body-parser");
 const Product = require("./models/productModel");
 
-
 //middleware
 app.use(cors());
-app.use(express.json());
-app.use(bodyParser.urlencoded({ extended: false }))
+app.use(express.json({
+  verify: (req, res, buf) => {
+    req.rawBody = buf.toString(); // Saves the raw bytes so Razorpay's hash doesn't break!
+  }
+}));
 
-app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: false }));
 
 //connection for mongoose database
 mongoose
