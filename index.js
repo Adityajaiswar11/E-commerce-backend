@@ -8,33 +8,9 @@ const app = express();
 mongoose.set("strictQuery", false);
 const bodyParser = require("body-parser");
 
-//middleware
-const allowedOrigins = [
-  "http://localhost:5173",             // local dev
-  "http://localhost:3000",             //local dev
-  "https://prodeazyshop.vercel.app",   // production frontend
-  "https://deveasyshop.vercel.app"     // staging frontend
-];
-
-const corsOptions = {
-  origin: (origin, callback) => {
-    // Allow requests with no origin (Postman, mobile apps, server-to-server)
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error(`CORS blocked: ${origin}`));
-    }
-  },
-  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true,
-};
-
-// Apply CORS to all routes — must be first middleware
-app.use(cors(corsOptions));
-
-// Handle OPTIONS preflight explicitly with the same config
-app.options("*", cors(corsOptions));
+//middleware — allow all origins (temporary, lock down before production)
+app.use(cors());
+app.options("*", cors());
 
 
 app.use(express.json({
