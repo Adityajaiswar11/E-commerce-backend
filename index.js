@@ -16,25 +16,8 @@ const allowedOrigins = [
   "https://deveasyshop.vercel.app"     // staging frontend
 ];
 
-const corsOptions = {
-  origin: (origin, callback) => {
-    // Allow requests with no origin (Postman, mobile apps, server-to-server)
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error(`CORS blocked: ${origin}`));
-    }
-  },
-  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true,
-};
-
-// Apply CORS to all routes — must be first middleware
-app.use(cors(corsOptions));
-
-// Handle OPTIONS preflight explicitly with the same config
-app.options("*", cors(corsOptions));
+app.use(cors());
+app.options("*", cors());
 
 
 app.use(express.json({
