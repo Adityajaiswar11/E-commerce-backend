@@ -3,10 +3,10 @@ const mongoose= require("mongoose");
 const cors = require("cors");
 require('dotenv').config();
 const fs = require('fs');
+const path = require('path');
 const app = express();
 mongoose.set("strictQuery", false);
 const bodyParser = require("body-parser");
-const Product = require("./models/productModel");
 
 //middleware
 app.use(cors());
@@ -50,11 +50,15 @@ app.get('/api/test', async (req, res) => {
 
 
 //automated routes
-const routesPath = "./routes";
-const routeFiles = fs.readdirSync(routesPath);
-routeFiles.map((r) => app.use("/api", require(`./routes/${r}`)));
+const routesPath = path.join(__dirname, 'routes');
+const routeFiles = fs.readdirSync(routesPath).filter(f => f.endsWith('.js'));
+routeFiles.forEach((r) => app.use("/api", require(path.join(routesPath, r))));
 
-//app listener
-const port = process.env.PORT || 3000;
+// Export app for Vercel (serverless — no listen needed)
+module.exports = app;
 
-app.listen(port, console.log(`server is listening on ${port}`));
+// Only listen when running locally (not on Vercel)
+if (process.env.VERCEL !== '1') {
+  const port = process.env.PORT || 5000;
+  app.listen(port, () => console.log(`server is listening on ${port}`));
+}
