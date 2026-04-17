@@ -2,8 +2,10 @@ const razorpay = require("../helper/razorpay");
 const crypto = require("crypto");
 
 exports.createOrder = async (amount) => {
+  const paise = Math.round(parseFloat(amount) * 100);
+
   const options = {
-    amount: amount * 100, // amount in the smallest currency unit (paise)
+    amount: paise,
     currency: "INR",
     receipt: `receipt_${Date.now()}`,
   };

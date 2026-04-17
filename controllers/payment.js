@@ -4,14 +4,12 @@ const razorpay = require("../helper/razorpay");
 
 exports.createPaymentOrder = async (req, res) => {
   try {
-    const { amount } = req.body;
     const user_id = req.user._id;
-    console.log(user_id);
+    const amount = parseFloat(req.body.amount);
 
-    if (!amount) {
-      return res.status(400).json({ error: "amount is required" });
+    if (!amount || isNaN(amount) || amount <= 0) {
+      return res.status(400).json({ error: "A valid positive amount is required" });
     }
-
     // Create the order on Razorpay
     const razorpayOrder = await paymentService.createOrder(amount);
 
@@ -20,7 +18,7 @@ exports.createPaymentOrder = async (req, res) => {
       order_id: razorpayOrder.id,
       user_id: user_id,
       amount: amount,
-      status: 1, // 1=created
+      payment_status: 1,
       currency: razorpayOrder.currency,
     });
 
@@ -82,7 +80,7 @@ exports.createS2SPayment = async (req, res) => {
       payment_id: rzpResponse.id,
       user_id: user_id,
       amount: amount,
-      payment_status: 1, // 1=created to match your new schema
+      payment_status: 1,
       currency: rzpResponse.currency,
       payment_status: 1
     });
@@ -165,20 +163,19 @@ exports.verifyPayment = async (req, res) => {
       .createHmac("sha256", secret)
       .update(razorpay_order_id + "|" + razorpay_payment_id)
       .digest("hex");
-
+    // Fetch payment from Razorpay to capture the custom method (UPI, Card, etc)
+    const payment = await paymentService.fetchPayment(razorpay_payment_id);
     if (generated_signature !== razorpay_signature) {
       await Order.findOneAndUpdate(
         { order_id: razorpay_order_id },
         {
           payment_status: 3, // 3=failed
-          payment_id: razorpay_payment_id
+          payment_id: razorpay_payment_id,
+          payment_method: payment.method
         }
       );
       return res.status(400).json({ success: false, message: "Payment verification failed" });
     }
-
-    // Fetch payment from Razorpay to capture the custom method (UPI, Card, etc)
-    const payment = await paymentService.fetchPayment(razorpay_payment_id);
 
     // Update the database immediately for snappy frontend feedback!
     await Order.findOneAndUpdate(
@@ -250,7 +247,7 @@ exports.getPaymentStatus = async (req, res) => {
 
     if (order) {
       if (order.payment_status === 2) return res.json({ status: "captured", order_id: order.order_id });
-      if (order.payment_status === 3) return res.json({ status: "failed",   order_id: order.order_id });
+      if (order.payment_status === 3) return res.json({ status: "failed", order_id: order.order_id });
     }
 
     // 2. Fallback: query Razorpay API directly
@@ -259,7 +256,7 @@ exports.getPaymentStatus = async (req, res) => {
       const orderPayments = await razorpay.orders.fetchPayments(paymentId);
       const items = orderPayments.items || [];
       const captured = items.find(p => p.status === "captured");
-      const failed   = items.find(p => p.status === "failed");
+      const failed = items.find(p => p.status === "failed");
 
       if (captured) {
         await Order.findOneAndUpdate(
