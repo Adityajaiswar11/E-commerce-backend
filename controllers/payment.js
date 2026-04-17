@@ -6,6 +6,7 @@ exports.createPaymentOrder = async (req, res) => {
   try {
     const { amount } = req.body;
     const user_id = req.user._id;
+    console.log(user_id);
 
     if (!amount) {
       return res.status(400).json({ error: "amount is required" });

@@ -7,6 +7,7 @@ const path = require('path');
 const app = express();
 mongoose.set("strictQuery", false);
 const bodyParser = require("body-parser");
+const { connectDB } = require("./db/database");
 
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -30,15 +31,7 @@ app.use(express.json({
 app.use(bodyParser.urlencoded({ extended: false }));
 
 //connection for mongoose database
-mongoose
-  .connect(process.env.DATABASE_URI, {
-          
-  })
-  .then(() => console.log("Database connected"))
-  .catch((err) => console.log("Error connecting to database",err));
-
-
-
+connectDB()
 app.get('/', async (req, res) => {
   try {
     res.status(201).json({
