@@ -8,15 +8,11 @@ const app = express();
 mongoose.set("strictQuery", false);
 const bodyParser = require("body-parser");
 
-//middleware
-const allowedOrigins = [
-  "http://localhost:5173",             // local dev
-  "http://localhost:3000",             //local dev
-  "https://prodeazyshop.vercel.app",   // production frontend
-  "https://deveasyshop.vercel.app"     // staging frontend
-];
-
-app.use(cors());
+app.use(cors({
+  origin: "*",
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+}));
 app.options("*", cors());
 
 
