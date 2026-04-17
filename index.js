@@ -9,7 +9,29 @@ mongoose.set("strictQuery", false);
 const bodyParser = require("body-parser");
 
 //middleware
-app.use(cors());
+const allowedOrigins = [
+  "http://localhost:5173",        // local dev
+  "https://prodeazyshop.vercel.app",  // production frontend
+  "https://deveasyshop.vercel.app" // staging frontend
+];
+
+app.use(cors({
+  origin: (origin, callback) => {
+    // Allow requests with no origin (e.g. Postman, server-to-server)
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error(`CORS blocked: ${origin}`));
+    }
+  },
+  credentials: true,            // if you send cookies/auth headers
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+}));
+
+// IMPORTANT: Handle preflight OPTIONS for all routes
+app.options("*", cors());
+
 app.use(express.json({
   verify: (req, res, buf) => {
     req.rawBody = buf.toString(); // Saves the raw bytes so Razorpay's hash doesn't break!
