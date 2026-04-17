@@ -1,4 +1,3 @@
-// utils/razorpay.js
 const Razorpay = require("razorpay");
 
 module.exports = new Razorpay({

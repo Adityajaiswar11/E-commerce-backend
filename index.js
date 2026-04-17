@@ -24,7 +24,6 @@ app.use(cors({
       callback(new Error(`CORS blocked: ${origin}`));
     }
   },
-  credentials: true,            // if you send cookies/auth headers
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
 }));
@@ -50,7 +49,7 @@ mongoose
 
 
 
-app.get('/api/test', async (req, res) => {
+app.get('/', async (req, res) => {
   try {
     res.status(201).json({
       success: true,
