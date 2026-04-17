@@ -35,10 +35,18 @@ app.use(express.json({
 
 app.use(bodyParser.urlencoded({ extended: false }));
 
-//connection for mongoose database
-connectDB()
-  .then(() => logger.info('Database connected'))
-  .catch((err) => logger.error('Database connection failed', { error: err.message }));
+// ─── Database (Vercel-safe) ───────────────────────────────────────────────────
+// On Vercel, each cold start is a fresh process. We await DB per-request so
+// controllers never run before the connection is ready.
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (err) {
+    logger.error('DB connection failed', { error: err.message });
+    res.status(503).json({ error: 'Database unavailable. Please try again.' });
+  }
+});
 
 app.get('/', async (req, res) => {
   try {
