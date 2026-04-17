@@ -36,7 +36,7 @@ app.use(express.json({
 app.use(bodyParser.urlencoded({ extended: false }));
 
 //connection for mongoose database
-await connectDB()
+connectDB()
   .then(() => logger.info('Database connected'))
   .catch((err) => logger.error('Database connection failed', { error: err.message }));
 
