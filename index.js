@@ -16,16 +16,17 @@ const morganFormat = process.env.VERCEL === '1' || process.env.NODE_ENV === 'pro
   : 'dev';
 app.use(morgan(morganFormat));
 
-const cors = require("cors");
-
 // ─── CORS ────────────────────────────────────────────────────────
-// Using the battle-tested 'cors' npm package guarantees preflight options
-// are handled correctly under all express edge-cases.
-app.use(cors({
-  origin: "*", // Allows any origin
-  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"]
-}));
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "https://prodeazyshop.vercel.app");
+  res.header("Access-Control-Allow-Methods", "GET,POST,PUT,PATCH,DELETE,OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  }
+  next();
+});
 
 
 app.use(express.json({
