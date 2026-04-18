@@ -16,14 +16,16 @@ const morganFormat = process.env.VERCEL === '1' || process.env.NODE_ENV === 'pro
   : 'dev';
 app.use(morgan(morganFormat));
 
+const cors = require("cors");
+
 // ─── CORS ────────────────────────────────────────────────────────
-app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,PATCH,DELETE,OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  if (req.method === "OPTIONS") return res.status(200).end();
-  next();
-});
+// Using the battle-tested 'cors' npm package guarantees preflight options
+// are handled correctly under all express edge-cases.
+app.use(cors({
+  origin: "*", // Allows any origin
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+}));
 
 
 app.use(express.json({
