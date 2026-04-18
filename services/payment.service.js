@@ -1,5 +1,6 @@
-const razorpay = require("../helper/razorpay");
+
 const crypto = require("crypto");
+const razorpay = require("../utils/razorpay");
 
 exports.createOrder = async (amount) => {
   const paise = Math.round(parseFloat(amount) * 100);

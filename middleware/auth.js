@@ -4,14 +4,13 @@ exports.requireSignin = (req, res, next) => {
   try {
     // 1. Get the token from the Header
     const authHeader = req.headers.authorization;
-    console.log(authHeader);
+
     if (!authHeader || !authHeader.startsWith("Bearer")) {
       return res.status(401).json({ message: "Access denied. No token provided." });
     }
 
     // Strip surrounding quotes (happens when frontend stores token as JSON.stringify(token) in localStorage)
     const token = authHeader.split(" ")[1].replace(/^"|"$/g, "");
-    console.log("Clean token:", token);
 
     // 2. Verify the Token
     const decoded = jwt.verify(token, process.env.SECRET);

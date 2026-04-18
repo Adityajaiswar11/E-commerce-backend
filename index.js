@@ -7,7 +7,6 @@ const path = require('path');
 const app = express();
 mongoose.set("strictQuery", false);
 const bodyParser = require("body-parser");
-const { connectDB } = require("./db/database");
 const logger = require("./utils/logger");
 
 // ─── HTTP request logging ────────────────────────────────────────
@@ -29,50 +28,25 @@ app.use((req, res, next) => {
 
 app.use(express.json({
   verify: (req, res, buf) => {
-    req.rawBody = buf.toString(); // Saves the raw bytes so Razorpay's hash doesn't break!
+    req.rawBody = buf.toString();
   }
 }));
 
 app.use(bodyParser.urlencoded({ extended: false }));
 
-// ─── Database (Vercel-safe) ───────────────────────────────────────────────────
-// On Vercel, each cold start is a fresh process. We await DB per-request so
-// controllers never run before the connection is ready.
-app.use(async (req, res, next) => {
-  try {
-    await connectDB();
-    next();
-  } catch (err) {
-    logger.error('DB connection failed', { error: err.message });
-    res.status(503).json({ error: 'Database unavailable. Please try again.' });
-  }
-});
 
-app.get('/', async (req, res) => {
-  try {
-    res.status(201).json({
-      success: true,
-      message:'server is running'
-      
-    });
-
-  } catch (error) {
-    console.error(error);
-
-    res.status(500).json({
-      success: false,
-      message: error.message
+// automated routes
+const routesPath = path.join(__dirname, 'modules');
+fs.readdirSync(routesPath).forEach((dir) => {
+  const modulePath = path.join(routesPath, dir);
+  if (fs.statSync(modulePath).isDirectory()) {
+    // Look for files ending with .routes.js in each module folder
+    const routeFiles = fs.readdirSync(modulePath).filter(f => f.endsWith('.routes.js'));
+    routeFiles.forEach((file) => {
+      app.use("/api", require(path.join(modulePath, file)));
     });
   }
 });
-
-
-
-
-//automated routes
-const routesPath = path.join(__dirname, 'routes');
-const routeFiles = fs.readdirSync(routesPath).filter(f => f.endsWith('.js'));
-routeFiles.forEach((r) => app.use("/api", require(path.join(routesPath, r))));
 
 // Export app for Vercel (serverless — no listen needed)
 module.exports = app;
