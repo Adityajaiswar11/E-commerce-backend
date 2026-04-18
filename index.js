@@ -4,7 +4,7 @@ const morgan = require("morgan");
 require('dotenv').config();
 const fs = require('fs');
 const path = require('path');
-const cors = require("cors");
+const cors = require("cors")
 const app = express();
 mongoose.set("strictQuery", false);
 const bodyParser = require("body-parser");
