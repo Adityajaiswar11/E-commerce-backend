@@ -18,36 +18,11 @@ const morganFormat = process.env.VERCEL === '1' || process.env.NODE_ENV === 'pro
 app.use(morgan(morganFormat));
 
 // ─── CORS ────────────────────────────────────────────────────────
-const allowedOrigins = [
-  "https://prodeazyshop.vercel.app",
-  "http://localhost:5173"
-];
-
 app.use(cors({
-  origin: function (origin, callback) {
-    // allow requests with no origin (like Postman)
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error("CORS not allowed"));
-    }
-  },
-  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true
+  origin: "*",
+  methods: ["*"],
+  allowedHeaders: ["*"],
 }));
-
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "https://prodeazyshop.vercel.app");
-  res.header("Access-Control-Allow-Methods", "GET,POST,PUT,PATCH,DELETE,OPTIONS");
-  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-
-  if (req.method === "OPTIONS") {
-    return res.sendStatus(200);
-  }
-  next();
-});
-
 
 app.use(express.json({
   verify: (req, res, buf) => {

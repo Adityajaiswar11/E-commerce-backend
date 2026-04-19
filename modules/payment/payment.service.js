@@ -17,7 +17,7 @@ class PaymentService {
         amount: order.amount / 100,
         currency: order.currency,
         receipt: order.receipt,
-        status: "pending",
+        status: "created",
         user_id: userId,
       }).select("*").single();
       return { paymentData};
