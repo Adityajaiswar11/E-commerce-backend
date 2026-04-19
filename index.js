@@ -47,7 +47,7 @@ app.get("/", (req, res) => {
 app.use(globalErrorMiddleware);
 
 // Export app for Vercel (serverless — no listen needed)
-module.exports = serverless(app);
+module.exports = app;
 
 // Only listen when running locally (not on Vercel)
 if (process.env.VERCEL !== '1') {
