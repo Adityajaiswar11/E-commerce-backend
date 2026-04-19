@@ -3,8 +3,6 @@ const serverless = require("serverless-http");
 const mongoose= require("mongoose");
 const morgan = require("morgan");
 require('dotenv').config();
-const fs = require('fs');
-const path = require('path');
 const cors = require("cors")
 const app = express();
 mongoose.set("strictQuery", false);
@@ -37,18 +35,10 @@ app.use(express.json({
 app.use(bodyParser.urlencoded({ extended: false }));
 
 
-// automated routes
-const routesPath = path.join(__dirname, 'modules');
-fs.readdirSync(routesPath).forEach((dir) => {
-  const modulePath = path.join(routesPath, dir);
-  if (fs.statSync(modulePath).isDirectory()) {
-    // Look for files ending with .routes.js in each module folder
-    const routeFiles = fs.readdirSync(modulePath).filter(f => f.endsWith('.routes.js'));
-    routeFiles.forEach((file) => {
-      app.use("/api", require(path.join(modulePath, file)));
-    });
-  }
-});
+//routes
+app.use("/api", require("./modules/auth/auth.routes"));
+app.use("/api", require("./modules/products/products.routes"));
+app.use("/api", require("./modules/payment/payment.routes"));
 
 // Export app for Vercel (serverless — no listen needed)
 module.exports = serverless(app);
