@@ -24,11 +24,11 @@ exports.createOrder = async (req, res) => {
 exports.verifyPayment = async (req, res) => {
   try {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
-    const {paymentData,message} = await paymentService.verifyPayment(razorpay_order_id, razorpay_payment_id, razorpay_signature);
-    if (message) {
-      return res.status(400).json({ paymentData,message,success:false });
+    const {paymentData,success} = await paymentService.verifyPayment(razorpay_order_id, razorpay_payment_id, razorpay_signature);
+    if (success) {
+      return res.status(200).json({ data:paymentData,success });
     } else {
-      return res.status(200).json({ paymentData, message,success:true });
+      return res.status(200).json({ data:paymentData,success });
     }
   } catch (error) {
     return res.status(500).json({ message: error.message });

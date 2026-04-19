@@ -37,10 +37,10 @@ class PaymentService {
     
     if(generated_signature === razorpay_signature){
       const {data:paymentData} = await supabase.from("payments").update({ status: "success", payment_method: payment.method, payment_id: razorpay_payment_id }).eq("payment_order_id", razorpay_order_id).select("*").single();
-      return { paymentData };
+      return { paymentData, success:true };
     } else {
       const {data:paymentData} = await supabase.from("payments").update({ status: "failed", payment_method: payment.method, payment_id: razorpay_payment_id }).eq("payment_order_id", razorpay_order_id).select("*").single();
-      return { paymentData };
+      return { paymentData, success:false };
     }
   }
 
