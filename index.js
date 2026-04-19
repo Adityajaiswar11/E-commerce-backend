@@ -39,6 +39,10 @@ app.use("/api", authRoutes);
 app.use("/api", productsRoutes);
 app.use("/api", paymentRoutes);
 
+app.get("/", (req, res) => {
+  res.json({ msg: "server is running",status:200 });
+});
+
 // error handler
 app.use(globalErrorMiddleware);
 
