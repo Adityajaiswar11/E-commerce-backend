@@ -6,16 +6,17 @@ const cors = require("cors")
 const app = express();  
 const bodyParser = require("body-parser");
 const logger = require("./utils/logger");
+const corsMiddleware = require("./middleware/cors");
+const globalErrorMiddleware = require("./middleware/globalError");
+const productsRoutes = require("./modules/products/products.routes");
+const paymentRoutes = require("./modules/payment/payment.routes");
+const authRoutes = require("./modules/auth/auth.routes");
 
 // ─── HTTP request logging ────────────────────────────────────────
-// 'combined' format in production (Apache-style for Vercel logs), 'dev' locally
-const morganFormat = process.env.VERCEL === '1' || process.env.NODE_ENV === 'production'
-  ? 'combined'
-  : 'dev';
+const morganFormat = process.env.VERCEL === '1' || process.env.NODE_ENV === 'production' ? 'combined' : 'dev';
 app.use(morgan(morganFormat));
 
 // ─── CORS ────────────────────────────────────────────────────────
-
 app.use(cors({
   origin: "*",
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
@@ -23,19 +24,23 @@ app.use(cors({
 }));
 
 app.options("*", cors());
+app.use(corsMiddleware);
 
+// raw body
 app.use(express.json({
   verify: (req, res, buf) => {
     req.rawBody = buf.toString();
   }
 }));
-
 app.use(bodyParser.urlencoded({ extended: false }));
 
 //routes
-app.use("/api", require("./modules/auth/auth.routes"));
-app.use("/api", require("./modules/products/products.routes"));
-app.use("/api", require("./modules/payment/payment.routes"));
+app.use("/api", authRoutes);
+app.use("/api", productsRoutes);
+app.use("/api", paymentRoutes);
+
+// error handler
+app.use(globalErrorMiddleware);
 
 // Export app for Vercel (serverless — no listen needed)
 module.exports = serverless(app);

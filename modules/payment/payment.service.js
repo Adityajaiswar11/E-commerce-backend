@@ -4,7 +4,7 @@ const crypto = require("crypto");
 
 class PaymentService {
   
-  async createOrder(amount,userId) {
+  async createOrder (amount,userId) {
     try {
       const order = await razorpay.orders.create({
         amount: Math.round(amount * 100),
