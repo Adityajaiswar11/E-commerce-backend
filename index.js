@@ -1,11 +1,9 @@
 const express= require("express");
 const serverless = require("serverless-http");
-const mongoose= require("mongoose");
 const morgan = require("morgan");
 require('dotenv').config();
 const cors = require("cors")
-const app = express();
-mongoose.set("strictQuery", false);
+const app = express();  
 const bodyParser = require("body-parser");
 const logger = require("./utils/logger");
 
@@ -33,7 +31,6 @@ app.use(express.json({
 }));
 
 app.use(bodyParser.urlencoded({ extended: false }));
-
 
 //routes
 app.use("/api", require("./modules/auth/auth.routes"));
