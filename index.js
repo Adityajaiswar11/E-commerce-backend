@@ -1,4 +1,5 @@
 const express= require("express");
+const serverless = require("serverless-http");
 const mongoose= require("mongoose");
 const morgan = require("morgan");
 require('dotenv').config();
@@ -18,11 +19,14 @@ const morganFormat = process.env.VERCEL === '1' || process.env.NODE_ENV === 'pro
 app.use(morgan(morganFormat));
 
 // ─── CORS ────────────────────────────────────────────────────────
+
 app.use(cors({
   origin: "*",
-  methods: ["*"],
-  allowedHeaders: ["*"],
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"]
 }));
+
+app.options("*", cors());
 
 app.use(express.json({
   verify: (req, res, buf) => {
@@ -47,7 +51,7 @@ fs.readdirSync(routesPath).forEach((dir) => {
 });
 
 // Export app for Vercel (serverless — no listen needed)
-module.exports = app;
+module.exports = serverless(app);
 
 // Only listen when running locally (not on Vercel)
 if (process.env.VERCEL !== '1') {
