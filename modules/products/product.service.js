@@ -37,10 +37,11 @@ class ProductService {
       query = query.range((page - 1) * limit, page * limit - 1);
     }
     const { data: products, error } = await query;
+    const { count } = await supabase.from("products").select("*", { count: "exact" });
     if (error) {
       return { error: error.message };
     }
-    return { products };
+    return { products, count, current_page: page, per_page: limit, total_pages: Math.ceil(count / limit) };
   }
 }
 

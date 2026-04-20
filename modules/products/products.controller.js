@@ -43,8 +43,8 @@ class ProductController {
   async getAllProducts(req, res) {
     try {
       const { search, sort, status, title, page, limit } = req.query;
-      const { products } = await productService.getAllProducts(search, sort, status, title, page, limit);
-      return res.status(200).json({ success: true, data: products });
+      const { products, count, current_page, per_page, total_pages } = await productService.getAllProducts(search, sort, status, title, page, limit);
+      return res.status(200).json({ success: true, data: products, count, current_page, per_page, total_pages });
     } catch (error) {
       return res.status(500).json({ success: false, message: error.message });
     }

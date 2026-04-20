@@ -11,6 +11,7 @@ const globalErrorMiddleware = require("./middleware/globalError");
 const productsRoutes = require("./modules/products/products.routes");
 const paymentRoutes = require("./modules/payment/payment.routes");
 const authRoutes = require("./modules/auth/auth.routes");
+const cartRoutes = require("./modules/cart/cart.routes");
 
 // ─── HTTP request logging ────────────────────────────────────────
 const morganFormat = process.env.VERCEL === '1' || process.env.NODE_ENV === 'production' ? 'combined' : 'dev';
@@ -39,6 +40,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use("/api", authRoutes);
 app.use("/api", productsRoutes);
 app.use("/api", paymentRoutes);
+app.use("/api", cartRoutes);
 
 app.get("/", (req, res) => {
   res.json({ msg: "server is running",status:200 });
