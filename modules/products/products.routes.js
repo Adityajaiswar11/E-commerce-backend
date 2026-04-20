@@ -7,6 +7,7 @@ const productsRoutes = express.Router();
 
 productsRoutes.post("/products/upload", isAuthenticated, upload.single("file"), productsController.uploadProductImage);
 productsRoutes.post("/products/create", isAuthenticated, productsController.createProduct);
+productsRoutes.get("/products/all", productsController.getAllProducts);
 
 
 module.exports = productsRoutes;  

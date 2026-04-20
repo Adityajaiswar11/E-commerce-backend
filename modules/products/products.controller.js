@@ -39,6 +39,16 @@ class ProductController {
       return res.status(500).json({ message: error.message });
     }
   }
+
+  async getAllProducts(req, res) {
+    try {
+      const { search, sort, status, title, page, limit } = req.query;
+      const { products } = await productService.getAllProducts(search, sort, status, title, page, limit);
+      return res.status(200).json({ success: true, data: products });
+    } catch (error) {
+      return res.status(500).json({ success: false, message: error.message });
+    }
+  }
 }
 
 module.exports = new ProductController();

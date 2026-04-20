@@ -16,7 +16,31 @@ class ProductService {
       if (error) {
         return { error:error.message };
       }
-      return { product};
+    return { product };
+  }
+
+  async getAllProducts(search, sort, status, title, page, limit) {
+    let query = supabase.from("products").select("*");
+    if (search) {
+      query = query.ilike("name", `%${search}%`);
+    }
+    if (sort) {
+      query = query.order(sort);
+    }
+    if (status) {
+      query = query.eq("status", status);
+    }
+    if (title) {
+      query = query.eq("title", title);
+    }
+    if (page) {
+      query = query.range((page - 1) * limit, page * limit - 1);
+    }
+    const { data: products, error } = await query;
+    if (error) {
+      return { error: error.message };
+    }
+    return { products };
   }
 }
 
