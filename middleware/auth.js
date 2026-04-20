@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 
-exports.requireSignin = (req, res, next) => {
+exports.isAuthenticated = (req, res, next) => {
   try {
     // 1. Get the token from the Header
     const authHeader = req.headers.authorization;

@@ -1,11 +1,11 @@
 const express = require('express');
 const paymentController = require('./payment.controller');
-const { requireSignin } = require('../../middleware/auth');
+const { isAuthenticated } = require('../../middleware/auth');
 
 const paymentRoutes = express.Router();
 
-paymentRoutes.post("/payment/order", requireSignin, paymentController.createOrder);
-paymentRoutes.post("/payment/verify", requireSignin, paymentController.verifyPayment);
+paymentRoutes.post("/payment/order", isAuthenticated, paymentController.createOrder);
+paymentRoutes.post("/payment/verify", isAuthenticated, paymentController.verifyPayment);
 
 
 module.exports = paymentRoutes;  

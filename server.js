@@ -17,8 +17,9 @@ const morganFormat = process.env.VERCEL === '1' || process.env.NODE_ENV === 'pro
 app.use(morgan(morganFormat));
 
 // ─── CORS ────────────────────────────────────────────────────────
+const allowedOrigins = ["http://localhost:5173", "https://prodeazyshop.vercel.app/"];
 app.use(cors({
-  origin: "*",
+  origin: allowedOrigins,
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"]
 }));
@@ -46,10 +47,8 @@ app.get("/", (req, res) => {
 // error handler
 app.use(globalErrorMiddleware);
 
-// Export app for Vercel (serverless — no listen needed)
 module.exports = app;
 
-// Only listen when running locally (not on Vercel)
 if (process.env.VERCEL !== '1') {
   const port = process.env.PORT || 5000;
   app.listen(port, () => logger.info(`Server listening on port ${port}`));
