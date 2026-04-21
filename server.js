@@ -18,7 +18,7 @@ const morganFormat = process.env.VERCEL === '1' || process.env.NODE_ENV === 'pro
 app.use(morgan(morganFormat));
 
 // ─── CORS ────────────────────────────────────────────────────────
-const allowedOrigins = ["http://localhost:5173", "https://prodeazyshop.vercel.app/"];
+const allowedOrigins = ["http://localhost:5173", "https://prodeazyshop.vercel.app"];
 app.use(cors({
   origin: allowedOrigins,
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
