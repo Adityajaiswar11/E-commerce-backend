@@ -9,14 +9,13 @@ class PaymentService {
       const order = await razorpay.orders.create({
         amount: Math.round(amount * 100),
         currency: "INR",
-        receipt: `receipt_${Date.now()}`,
       });
+      console.log(order)
       
       const {data:paymentData} = await supabase.from("payments").insert({
         payment_order_id: order.id,
         amount: order.amount / 100,
         currency: order.currency,
-        receipt: order.receipt,
         status: "created",
         user_id: userId,
       }).select("*").single();

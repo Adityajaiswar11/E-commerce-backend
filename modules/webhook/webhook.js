@@ -25,13 +25,13 @@ const crypto = require("crypto");
       // Payment successful
       if (event.event === "payment.captured") {
         const payment = event.payload
-        await supabase.from("payments").update({ status: "success", metadata: payment }).eq("order_id", payment.order_id);
+        await supabase.from("payments").update({ status: "success", metadata: payment }).eq("payment_order_id", payment.order_id);
       }
 
       // Payment failed
       if (event.event === "payment.failed") {
         const payment = event.payload;
-        await supabase.from("payments").update({status: "failed", metadata: payment}).eq("order_id", payment.order_id);
+        await supabase.from("payments").update({ status: "failed", metadata: payment }).eq("payment_order_id", payment.order_id);
       }
 
       return res.status(200).json({
