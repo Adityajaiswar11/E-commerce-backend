@@ -3,6 +3,7 @@ const supabase = require("../../config/supabase");
 
 const webhook = async (req, res) => {
   try {
+    console.log("🔥 RAZORPAY WEBHOOK HIT");
     const webhookSignature = req.headers["x-razorpay-signature"];
 
     if (!webhookSignature) {
