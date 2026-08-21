@@ -29,11 +29,14 @@ app.options("*", cors());
 app.use(corsMiddleware);
 
 // raw body
-app.use(express.json({
-  verify: (req, res, buf) => {
-    req.rawBody = buf.toString();
-  }
-}));
+app.use(
+  express.json({
+    verify: (req, res, buf) => {
+      req.rawBody = Buffer.from(buf);
+    },
+  })
+);
+
 app.use(bodyParser.urlencoded({ extended: false }));
 
 //routes

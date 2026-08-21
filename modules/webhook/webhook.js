@@ -5,20 +5,17 @@ const webhook = async (req, res) => {
   try {
     console.log("🔥 WEBHOOK HIT");
 
-    console.log("Event:", req.body?.event);
+    const webhookSignature =
+      req.headers["x-razorpay-signature"];
 
-    console.log(
-      "Signature:",
-      req.headers["x-razorpay-signature"]
-    );
+    if (!webhookSignature) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing Razorpay signature",
+      });
+    }
 
-    console.log(
-      "Raw body exists:",
-      !!req.rawBody
-    );
-
-    const signature = req.headers["x-razorpay-signature"];
-
+    // IMPORTANT: use RAW body, NOT req.body
     const expectedSignature = crypto
       .createHmac(
         "sha256",
@@ -27,11 +24,8 @@ const webhook = async (req, res) => {
       .update(req.rawBody)
       .digest("hex");
 
-    console.log("Expected:", expectedSignature);
-    console.log("Received:", signature);
-
-    if (signature !== expectedSignature) {
-      console.log("❌ SIGNATURE FAILED");
+    if (webhookSignature !== expectedSignature) {
+      console.log("❌ Invalid signature");
 
       return res.status(400).json({
         success: false,
@@ -39,17 +33,19 @@ const webhook = async (req, res) => {
       });
     }
 
-    console.log("✅ SIGNATURE VERIFIED");
+    console.log("✅ Signature verified");
 
+    // Express has already parsed this
     const event = req.body;
 
-    console.log("EVENT TYPE:", event.event);
+    console.log("Event:", event.event);
 
     if (event.event === "payment.captured") {
       const payment = event.payload.payment.entity;
 
-      console.log("💰 PAYMENT CAPTURED");
-      console.log("Payment:", payment);
+      console.log("💰 Payment captured");
+      console.log("Payment ID:", payment.id);
+      console.log("Order ID:", payment.order_id);
 
       const { data, error } = await supabase
         .from("payments")
@@ -60,14 +56,20 @@ const webhook = async (req, res) => {
         .eq("payment_order_id", payment.order_id)
         .select();
 
-      console.log("Supabase data:", data);
-      console.log("Supabase error:", error);
+      if (error) {
+        console.error("Supabase error:", error);
+
+        return res.status(500).json({
+          success: false,
+          message: "Payment update failed",
+        });
+      }
+
+      console.log("Payment updated:", data);
     }
 
     if (event.event === "payment.failed") {
       const payment = event.payload.payment.entity;
-
-      console.log("❌ PAYMENT FAILED");
 
       await supabase
         .from("payments")
@@ -83,11 +85,11 @@ const webhook = async (req, res) => {
     });
 
   } catch (error) {
-    console.error("🔥 WEBHOOK ERROR:", error);
+    console.error("Razorpay webhook error:", error);
 
     return res.status(500).json({
       success: false,
-      message: error.message,
+      message: "Webhook processing failed",
     });
   }
 };
