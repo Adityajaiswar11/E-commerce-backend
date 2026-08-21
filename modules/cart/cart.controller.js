@@ -19,9 +19,10 @@ class CartController {
 
   async getCart(req, res) {
     try {
+
       const { cart, total_price,total_items, error } = await cartService.getCart(5);
       if (error) return res.status(400).json({ message: error, success: false });
-      return res.status(201).json({ data: cart, total_price,total_items, success: true });
+      return res.status(200).json({ data: cart, total_price, total_items, success: true });
     } catch (error) {
       return res.status(500).json({ message: error.message, success: false });
     }
@@ -29,9 +30,11 @@ class CartController {
 
   async updateCart(req, res) {
     try {
-      const { cart, error } = await cartService.updateCart(req.body);
+      if (!req.body.cartId) return res.status(400).json({ message: "Cart ID is required" });
+      if (!req.body.quantity) return res.status(400).json({ message: "Quantity is required" });
+      const { cart, error } = await cartService.updateCart(req.body.cartId, req.body.quantity);
       if (error) return res.status(400).json({ message: error, success: false });
-      return res.status(201).json({ data: cart, success: true });
+      return res.status(200).json({ data: cart, success: true });
     } catch (error) {
       return res.status(500).json({ message: error.message, success: false });
     }
@@ -39,9 +42,10 @@ class CartController {
 
   async deleteCart(req, res) {
     try {
-      const { cart, error } = await cartService.deleteCart(req.body);
+      if (!req.body.cart_id) return res.status(400).json({ message: "Cart ID is required" });
+      const { cart, error } = await cartService.deleteCart(req.body.cart_id);
       if (error) return res.status(400).json({ message: error, success: false });
-      return res.status(201).json({ data: cart, success: true });
+      return res.status(200).json({ data: cart, success: true });
     } catch (error) {
       return res.status(500).json({ message: error.message, success: false });
     }

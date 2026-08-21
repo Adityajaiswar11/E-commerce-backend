@@ -32,16 +32,16 @@ class CartService {
     return { cart:tranformedCart, total_price,total_items:cart.length };
   }
 
-  async updateCart(cartData) {
-    const { data: cart, error } = await supabase.from("carts").update(cartData).select("*").single();
+  async updateCart(cartId, quantity) {
+    const { data: cart, error } = await supabase.from("carts").update({ quantity }).eq("id", cartId).select("*").single();
     if (error) {
       return { error: error.message };
     }
     return { cart };
   }
 
-  async deleteCart(cartData) {
-    const { data: cart, error } = await supabase.from("carts").delete(cartData).select("*").single();
+  async deleteCart(cartId) {
+    const { data: cart, error } = await supabase.from("carts").delete().eq("id", cartId).select("*").single();
     if (error) {
       return { error: error.message };
     }
