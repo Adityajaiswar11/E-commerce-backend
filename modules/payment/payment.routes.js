@@ -7,7 +7,7 @@ const paymentRoutes = express.Router();
 
 paymentRoutes.post("/payment/order", isAuthenticated, paymentController.createOrder);
 paymentRoutes.post("/payment/verify", isAuthenticated, paymentController.verifyPayment);
-paymentRoutes.post("/webhook", express.raw({ type: "application/json" }), webhook);
+paymentRoutes.post("/webhook", webhook);
 
 
 module.exports = paymentRoutes;  
